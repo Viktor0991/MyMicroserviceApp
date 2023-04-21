@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/MyMicroserviceApp.iml" filepath="$PROJECT_DIR$/.idea/MyMicroserviceApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/account-history-service/account-history-service.iml" filepath="$PROJECT_DIR$/account-history-service/account-history-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/auth-service/auth-service.iml" filepath="$PROJECT_DIR$/auth-service/auth-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config-service/config-service.iml" filepath="$PROJECT_DIR$/config-service/config-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/currency-rate-service/currency.iml" filepath="$PROJECT_DIR$/currency-rate-service/currency.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eureka-service/eureka-service.iml" filepath="$PROJECT_DIR$/eureka-service/eureka-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exchange-processing-service/exchange-processing-service.iml" filepath="$PROJECT_DIR$/exchange-processing-service/exchange-processing-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gateway-service/gateway-service.iml" filepath="$PROJECT_DIR$/gateway-service/gateway-service.iml" />
+    </modules>
+  </component>
+</project>

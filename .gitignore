@@ -1,0 +1,3 @@
+# Project exclude paths
+/account-history-service/target/
+/config-service/target/

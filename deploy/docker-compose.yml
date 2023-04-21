@@ -1,0 +1,252 @@
+version: '2.1'
+
+services:
+  eureka-discovery-service:
+    image: eureka-discovery-service
+    container_name: myproject-eureka-discovery-service
+    ports:
+    - "8761:8761"
+    networks:
+      myproject:
+       aliases:
+        - "eureka"
+
+  config-service:
+    image: config-service
+    container_name: myproject-config-service
+    depends_on:
+      - eureka-discovery-service
+    ports:
+    - "8888:8888"
+    environment:
+      EUREKA_HOST: eureka
+    networks:
+      myproject:
+       aliases:
+        - "config"
+
+  currency-rate-service:
+    image: currency-rate-service
+    container_name: myproject-currency-rate-service
+    depends_on:
+      - eureka-discovery-service
+      - config-service
+    environment:
+      EUREKA_HOST: eureka
+      CFG_HOST: config
+    ports:
+      - "8085:8085"
+    networks:
+      myproject:
+        aliases:
+          - "currency-rate-service"
+
+  gateway-service:
+    image: gateway-service
+    container_name: myproject-gateway-service
+    depends_on:
+      - eureka-discovery-service
+      - config-service
+    environment:
+      EUREKA_HOST: eureka
+      CFG_HOST: config
+      CURRENCY_URL: "http://172.17.0.1:8085"
+    ports:
+    - "8580:8080"
+    networks:
+      myproject:
+       aliases:
+        - "gateway"
+
+  auth-service:
+    image: auth-service
+    container_name: auth-myproject-service
+    depends_on:
+      - eureka-discovery-service
+      - config-service
+    environment:
+      EUREKA_HOST: eureka
+      CFG_HOST: config
+      ZIPKIN_HOST: zipkin
+      LOGSTASH_HOST: logstash
+    ports:
+    - "9000:9000"
+    networks:
+      myproject:
+       aliases:
+        - "auth-service"
+
+  exchange-processing-service:
+    image: exchange-processing-service
+    container_name: exchange-myproject-processing-service
+    depends_on:
+      - eureka-discovery-service
+      - config-service
+      - auth-service
+      - postgres
+      - kafka
+    environment:
+      EUREKA_HOST: eureka
+      CFG_HOST: config
+      ZIPKIN_HOST: zipkin
+      LOGSTASH_HOST: logstash
+      DB_HOST: postgres
+      KAFKA_HOST: kafka
+      CURRENCY_URL: "http://gateway:8080"
+      AUTH_TOKEN_URL: "http://auth-service:9000/oauth/check_token"
+      USER_INFO_URL: "http://auth-service:9000/user"
+    ports:
+    - "8090:8090"
+    networks:
+      myproject:
+       aliases:
+        - "exchange-processing-service"
+
+  account-history-service:
+    image: account-history-service
+    container_name: account-myproject-history-service
+    depends_on:
+      - eureka-discovery-service
+      - config-service
+      - auth-service
+      - postgres
+      - kafka
+    environment:
+      EUREKA_HOST: eureka
+      CFG_HOST: config
+      DB_HOST: postgres
+      KAFKA_HOST: kafka
+      AUTH_TOKEN_URL: "http://auth-service:9000/oauth/check_token"
+      USER_INFO_URL: "http://auth-service:9000/user"
+    volumes:
+    - /my/project/dir:/MyMicroserviceApp/account-history-service
+    ports:
+    - "8010:8010"
+    networks:
+      myproject:
+       aliases:
+        - "account-history-service"
+
+  postgres:
+    image: postgres:13.3
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: masterkey
+    ports:
+    - 5432:5432
+    volumes:
+    - "/srv/db/postgres:/var/lib/postgresql/data:rw"
+    networks:
+      myproject:
+       aliases:
+        - "postgres"
+
+  zookeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeper
+    ports:
+    - 2182:2182
+    networks:
+      myproject:
+       aliases:
+        - "zookeper"
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+    - "9092:9092"
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeper:2181
+      - KAFKA_CREATE_TOPICS=account-events:4:1
+    volumes:
+    - "/MyMicroserviceApp/docker/docker.sock:/MyMicroserviceApp/docker/docker.sock:rw"
+    depends_on:
+      - zookeper
+    networks:
+      myproject:
+       aliases:
+        - "kafka"
+
+  nginx-web-client:
+    image: nginx:1.14.2
+    container_name: web-client
+    depends_on:
+      - gateway-service
+    volumes:
+      - "C:/Users/Vitok/IdeaProjects/MyMicroserviceApp/web-client/build/:/usr/share/nginx/html:ro"
+      - "C:/Users/Vitok/IdeaProjects/MyMicroserviceApp/web-client/conf/nginx.conf:/etc/nginx/nginx.conf:ro"
+    ports:
+    - "3000:80"
+    networks:
+      - myproject
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+    - "9611:9611"
+    networks:
+      myproject:
+       aliases:
+        - "zipkin"
+
+  elasticsearch:
+    image: elasticsearch:8.3.3
+    container_name: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+    networks:
+      myproject:
+       aliases:
+        - "elasticsearch"
+
+  kibana:
+    image: kibana:8.3.3
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      - "xpack.security.enabled=false"
+      - "ELASTICSEARCH_URL=http://elasticsearch:9300"
+    ports:
+    - "5601:5601"
+    networks:
+      myproject:
+       aliases:
+        - "kibana"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+    - "9090:9090"
+    networks:
+      myproject:
+       aliases:
+        - "prometheus"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: password
+    ports:
+    - "3030:3000"
+
+networks:
+  myproject:
+    driver: bridge
+
+

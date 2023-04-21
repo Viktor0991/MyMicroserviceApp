@@ -1,0 +1,30 @@
+server:
+  port: 8888
+
+cloud:
+  eureka-host: localhost
+
+spring:
+  application:
+    name: config-server
+  main:
+    web-application-type: reactive
+
+  spring:
+    cloud:
+     config:
+      server:
+       git:
+         searchPaths: configuration
+         uri: "https://github.com/briansjavablog/micro-services-spring-cloud-config"
+       bootstrap: true
+
+eureka:
+  client:
+    enabled: false
+    serviceUrl:
+      defaultZone: http://${cloud.eureka-host}:8761/eureka
+
+currency:
+  client:
+    url: "http://cbr.ru/scripts/XML_daily.asp"
