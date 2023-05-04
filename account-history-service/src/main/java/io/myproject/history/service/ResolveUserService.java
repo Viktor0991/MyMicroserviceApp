@@ -1,13 +1,11 @@
 package io.myproject.history.service;
 
-import io.myproject.history.model.AccountEvent;
+import org.json.JSONObject;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Objects;
 
 @Service
 public class ResolveUserService {
@@ -21,8 +19,9 @@ public class ResolveUserService {
 
     public Long resolveUserId() {
         RestTemplate restTemplate = restTemplateFactory.getUserInfoRestTemplate();
-        ResponseEntity<AccountEvent> response = restTemplate.getForEntity(resource.getUserInfoUri(), AccountEvent.class);
-        AccountEvent accountEvent = response.getBody();
-        return Objects.requireNonNull(accountEvent).getUserId();
+        ResponseEntity<String> response = restTemplate.getForEntity(resource.getUserInfoUri(), String.class);
+        JSONObject principal = new JSONObject(response.getBody());
+        JSONObject userId = principal.getJSONObject("principal");
+        return userId.getLong("userId");
     }
 }

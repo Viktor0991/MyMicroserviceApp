@@ -10,21 +10,14 @@ spring:
   main:
     web-application-type: reactive
 
-  spring:
-    cloud:
-     config:
-      server:
-       git:
-         searchPaths: configuration
-         uri: "https://github.com/briansjavablog/micro-services-spring-cloud-config"
-       bootstrap: true
+  cloud:
+    config:
+     server:
+      git:
+        uri: "https://github.com/briansjavablog/micro-services-spring-cloud-config"
+        searchPaths: configuration
 
 eureka:
   client:
-    enabled: false
     serviceUrl:
       defaultZone: http://${cloud.eureka-host}:8761/eureka
-
-currency:
-  client:
-    url: "http://cbr.ru/scripts/XML_daily.asp"

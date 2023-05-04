@@ -2,10 +2,10 @@ FROM adoptopenjdk/openjdk11:jdk-11.0.8_10-alpine
 ADD target/*.jar app.jar
 
 ENV EUREKA_HOST=localhost
-ENV PROCESSING_URL="http://localhost:8090"
-ENV CURRENCY_URL="http://localhost:8085"
-ENV AUTH_URL="http://localhost:9000"
-ENV HISTORY_URL="http://localhost:8010"
+ENV PROCESSING_URL="http://172.17.0.1:8090"
+ENV CURRENCY_URL="http://172.17.0.1:8085"
+ENV AUTH_URL="http://172.17.0.1:9000"
+ENV HISTORY_URL="http://172.17.0.1:8010"
 
 EXPOSE 8080
 

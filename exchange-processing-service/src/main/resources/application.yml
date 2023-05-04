@@ -5,7 +5,7 @@ cloud:
   db-host: localhost
   eureka-host: localhost
   kafka-host: localhost
-  currency-url: http://localhost:8080
+  currency-url: http://localhost:8085
   auth-token-url: http://localhost:9000/oauth/check_token
   user-info-url: http://localhost:9000/user
 
@@ -40,7 +40,7 @@ spring:
 
 service:
   currency:
-    url: ${cloud.currency-rate-url}
+    url: ${cloud.currency-url}
 
 eureka:
   client:

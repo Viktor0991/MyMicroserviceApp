@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountEventKafkaListener {
-    private AccountEventRepository repository;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final AccountEventRepository repository;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public AccountEventKafkaListener(AccountEventRepository repository) {

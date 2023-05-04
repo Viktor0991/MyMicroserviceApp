@@ -3,4 +3,4 @@ create table OPERATION (
     CODE varchar(8) not null
 );
 
-insert into OPERATION(ID, CODE) values (1, 'PUT'), (2, 'EXCHANGE');
+insert into OPERATION(ID, CODE) values (0, 'PUT'), (1, 'EXCHANGE');
